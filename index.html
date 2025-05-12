@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão de Veículos Alugados</title>
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --success-color: #4cc9f0;
+            --danger-color: #f72585;
+            --warning-color: #f8961e;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --gray-color: #6c757d;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Seção de Login */
+        #auth-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        }
+        
+        .auth-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 420px;
+            transition: all 0.3s ease;
+        }
+        
+        .auth-card:hover {
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+        
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .auth-header h2 {
+            color: var(--dark-color);
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .auth-header p {
+            color: var(--gray-color);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            width: 100%;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #d1145a;
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .btn-outline:hover {
+            background-color: rgba(67, 97, 238, 0.1);
+        }
+        
+        /* Seção Principal */
+        #app-section {
+            display: none;
+            min-height: 100vh;
+        }
+        
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 0;
+            border-bottom: 1px solid #e9ecef;
+            margin-bottom: 2rem;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .user-name {
+            font-weight: 600;
+        }
+        
+        /* Seção de Veículos */
+        .section-title {
+            margin-bottom: 1.5rem;
+            color: var(--dark-color);
+        }
+        
+        .vehicles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+        
+        .vehicle-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .vehicle-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+        
+        .vehicle-image {
+            height: 180px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        
+        .vehicle-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .vehicle-content {
+            padding: 1.5rem;
+        }
+        
+        .vehicle-title {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: var(--dark-color);
+        }
+        
+        .vehicle-meta {
+            display: flex;
+            justify-content: space-between;
+            color: var(--gray-color);
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+        
+        .vehicle-period {
+            display: inline-block;
+            background-color: #e9ecef;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .payment-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+        
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        
+        .status-good {
+            background-color: var(--success-color);
+        }
+        
+        .status-warning {
+            background-color: var(--warning-color);
+        }
+        
+        .status-danger {
+            background-color: var(--danger-color);
+        }
+        
+        /* Seção de Pagamentos */
+        #payments-section {
+            display: none;
+            margin-top: 2rem;
+        }
+        
+        .payments-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .payments-nav {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .payment-tabs {
+            display: flex;
+            border-bottom: 1px solid #e9ecef;
+            margin-bottom: 1.5rem;
+        }
+        
+        .payment-tab {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            font-weight: 500;
+            color: var(--gray-color);
+            transition: all 0.3s;
+        }
+        
+        .payment-tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .payments-list {
+            display: none;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+        
+        .payments-list.active {
+            display: block;
+        }
+        
+        .payment-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem;
+            border-bottom: 1px solid #e9ecef;
+            transition: background-color 0.2s;
+            cursor: pointer;
+        }
+        
+        .payment-item:last-child {
+            border-bottom: none;
+        }
+        
+        .payment-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .payment-info {
+            flex: 1;
+        }
+        
+        .payment-id {
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 0.25rem;
+        }
+        
+        .payment-details {
+            font-size: 0.875rem;
+            color: var(--gray-color);
+        }
+        
+        .payment-amount {
+            font-weight: 600;
+            margin: 0 1.5rem;
+            color: var(--dark-color);
+        }
+        
+        .payment-status-badge {
+            padding: 0.375rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .status-paid {
+            background-color: rgba(76, 201, 240, 0.1);
+            color: var(--success-color);
+        }
+        
+        .status-pending {
+            background-color: rgba(248, 150, 30, 0.1);
+            color: var(--warning-color);
+        }
+        
+        .status-overdue {
+            background-color: rgba(247, 37, 133, 0.1);
+            color: var(--danger-color);
+        }
+        
+        /* Modal de Detalhes */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .modal-title {
+            font-size: 1.5rem;
+            color: var(--dark-color);
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray-color);
+        }
+        
+        .modal-body {
+            margin-bottom: 1.5rem;
+        }
+        
+        .payment-detail {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        
+        .detail-value {
+            color: var(--gray-color);
+        }
+        
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+        
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .auth-card {
+                padding: 1.5rem;
+            }
+            
+            .app-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .user-profile {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .vehicles-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .payment-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .payment-amount {
+                margin: 0;
+                align-self: flex-end;
+            }
+            
+            .modal-content {
+                padding: 1.5rem;
+                margin: 0 1rem;
+            }
+        }
+        
+        /* Animações */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease forwards;
+        }
+        
+        /* Utilitários */
+        .text-center {
+            text-align: center;
+        }
+        
+        .mb-3 {
+            margin-bottom: 1rem;
+        }
+        
+        .mt-3 {
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Seção de Autenticação -->
+    <section id="auth-section">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h2>Bem-vindo de volta</h2>
+                <p>Faça login para acessar seus veículos alugados</p>
+            </div>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="email" class="form-label">E-mail</label>
+                    <input type="email" id="email" class="form-control" placeholder="seu@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="password" class="form-label">Senha</label>
+                    <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Entrar</button>
+            </form>
+        </div>
+    </section>
+    
+    <!-- Seção Principal do Aplicativo -->
+    <section id="app-section">
+        <div class="container">
+            <header class="app-header">
+                <h1>Meus Veículos Alugados</h1>
+                <div class="user-profile">
+                    <div class="user-avatar" id="user-avatar">JS</div>
+                    <span class="user-name" id="user-name">João Silva</span>
+                    <button class="btn btn-danger" id="logout-btn">Sair</button>
+                </div>
+            </header>
+            
+            <!-- Seção de Veículos -->
+            <div id="vehicles-section">
+                <h2 class="section-title">Veículos em posse</h2>
+                <div class="vehicles-grid" id="vehicles-grid">
+                    <!-- Veículos serão carregados aqui via JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Seção de Pagamentos -->
+            <div id="payments-section">
+                <div class="payments-header">
+                    <h2 class="section-title" id="payment-vehicle-title">Pagamentos</h2>
+                    <div class="payments-nav">
+                        <button class="btn btn-outline" id="back-btn">
+                            &larr; Voltar
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="payment-tabs">
+                    <div class="payment-tab active" data-tab="all">Todos</div>
+                    <div class="payment-tab" data-tab="pending">Pendentes</div>
+                    <div class="payment-tab" data-tab="paid">Pagos</div>
+                    <div class="payment-tab" data-tab="overdue">Atrasados</div>
+                </div>
+                
+                <div class="payments-list active" id="all-payments">
+                    <!-- Todos os pagamentos serão carregados aqui -->
+                    <div class="text-center mb-3 mt-3">
+                        <p>Selecione um veículo para visualizar os pagamentos</p>
+                    </div>
+                </div>
+                
+                <div class="payments-list" id="pending-payments">
+                    <!-- Pagamentos pendentes serão carregados aqui -->
+                </div>
+                
+                <div class="payments-list" id="paid-payments">
+                    <!-- Pagamentos pagos serão carregados aqui -->
+                </div>
+                
+                <div class="payments-list" id="overdue-payments">
+                    <!-- Pagamentos atrasados serão carregados aqui -->
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Modal de Detalhes do Pagamento -->
+    <div id="payment-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Detalhes do Pagamento</h3>
+                <button class="modal-close" id="close-modal">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <!-- Conteúdo será preenchido via JavaScript -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancel-payment">Cancelar</button>
+                <button class="btn btn-primary" id="confirm-payment">Pagar Agora</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Dados de exemplo (em uma aplicação real, isso viria de uma API)
+        const sampleData = {
+            user: {
+                id: 1,
+                name: "João Silva",
+                email: "joao.silva@exemplo.com",
+                avatarInitials: "JS"
+            },
+            vehicles: [
+                {
+                    id: 1,
+                    model: "Toyota Corolla",
+                    brand: "Toyota",
+                    year: 2022,
+                    plate: "ABC-1234",
+                    image: "https://source.unsplash.com/random/600x400/?toyota-corolla",
+                    rentalStart: "01/01/2023",
+                    rentalEnd: "31/12/2023",
+                    status: "active",
+                    payments: [
+                        { 
+                            id: 101, 
+                            dueDate: "05/01/2023", 
+                            amount: 2500.00, 
+                            status: "paid", 
+                            paidDate: "03/01/2023",
+                            description: "Pagamento mensal - Janeiro"
+                        },
+                        { 
+                            id: 102, 
+                            dueDate: "05/02/2023", 
+                            amount: 2500.00, 
+                            status: "paid", 
+                            paidDate: "02/02/2023",
+                            description: "Pagamento mensal - Fevereiro"
+                        },
+                        { 
+                            id: 103, 
+                            dueDate: "05/03/2023", 
+                            amount: 2500.00, 
+                            status: "paid", 
+                            paidDate: "01/03/2023",
+                            description: "Pagamento mensal - Março"
+                        },
+                        { 
+                            id: 104, 
+                            dueDate: "05/04/2023", 
+                            amount: 2500.00, 
+                            status: "overdue", 
+                            description: "Pagamento mensal - Abril"
+                        },
+                        { 
+                            id: 105, 
+                            dueDate: "05/05/2023", 
+                            amount: 2500.00, 
+                            status: "pending", 
+                            description: "Pagamento mensal - Maio"
+                        },
+                        { 
+                            id: 106, 
+                            dueDate: "05/06/2023", 
+                            amount: 2500.00, 
+                            status: "pending", 
+                            description: "Pagamento mensal - Junho"
+                        }
+                    ]
+                },
+                {
+                    id: 2,
+                    model: "Honda Civic",
+                    brand: "Honda",
+                    year: 2021,
+                    plate: "XYZ-9876",
+                    image: "https://source.unsplash.com/random/600x400/?honda-civic",
+                    rentalStart: "15/02/2023",
+                    rentalEnd: "14/02/2024",
+                    status: "active",
+                    payments: [
+                        { 
+                            id: 201, 
+                            dueDate: "20/02/2023", 
+                            amount: 2200.00, 
+                            status: "paid", 
+                            paidDate: "18/02/2023",
+                            description: "Pagamento mensal - Fevereiro"
+                        },
+                        { 
+                            id: 202, 
+                            dueDate: "20/03/2023", 
+                            amount: 2200.00, 
+                            status: "paid", 
+                            paidDate: "19/03/2023",
+                            description: "Pagamento mensal - Março"
+                        },
+                        { 
+                            id: 203, 
+                            dueDate: "20/04/2023", 
+                            amount: 2200.00, 
+                            status: "overdue", 
+                            description: "Pagamento mensal - Abril"
+                        },
+                        { 
+                            id: 204, 
+                            dueDate: "20/05/2023", 
+                            amount: 2200.00, 
+                            status: "pending", 
+                            description: "Pagamento mensal - Maio"
+                        }
+                    ]
+                },
+                {
+                    id: 3,
+                    model: "Volkswagen Golf",
+                    brand: "Volkswagen",
+                    year: 2020,
+                    plate: "DEF-5678",
+                    image: "https://source.unsplash.com/random/600x400/?volkswagen-golf",
+                    rentalStart: "10/03/2023",
+                    rentalEnd: "09/03/2024",
+                    status: "active",
+                    payments: [
+                        { 
+                            id: 301, 
+                            dueDate: "15/03/2023", 
+                            amount: 1800.00, 
+                            status: "paid", 
+                            paidDate: "12/03/2023",
+                            description: "Pagamento mensal - Março"
+                        },
+                        { 
+                            id: 302, 
+                            dueDate: "15/04/2023", 
+                            amount: 1800.00, 
+                            status: "paid", 
+                            paidDate: "14/04/2023",
+                            description: "Pagamento mensal - Abril"
+                        },
+                        { 
+                            id: 303, 
+                            dueDate: "15/05/2023", 
+                            amount: 1800.00, 
+                            status: "pending", 
+                            description: "Pagamento mensal - Maio"
+                        }
+                    ]
+                }
+            ]
+        };
+        
+        // Elementos DOM
+        const authSection = document.getElementById('auth-section');
+        const appSection = document.getElementById('app-section');
+        const loginForm = document.getElementById('login-form');
+        const logoutBtn = document.getElementById('logout-btn');
+        const userName = document.getElementById('user-name');
+        const userAvatar = document.getElementById('user-avatar');
+        const vehiclesGrid = document.getElementById('vehicles-grid');
+        const vehiclesSection = document.getElementById('vehicles-section');
+        const paymentsSection = document.getElementById('payments-section');
+        const paymentVehicleTitle = document.getElementById('payment-vehicle-title');
+        const backBtn = document.getElementById('back-btn');
+        const paymentTabs = document.querySelectorAll('.payment-tab');
+        const paymentsLists = {
+            all: document.getElementById('all-payments'),
+            pending: document.getElementById('pending-payments'),
+            paid: document.getElementById('paid-payments'),
+            overdue: document.getElementById('overdue-payments')
+        };
+        
+        // Elementos do modal
+        const paymentModal = document.getElementById('payment-modal');
+        const modalBody = document.getElementById('modal-body');
+        const closeModalBtn = document.getElementById('close-modal');
+        const cancelPaymentBtn = document.getElementById('cancel-payment');
+        const confirmPaymentBtn = document.getElementById('confirm-payment');
+        
+        // Variáveis de estado
+        let currentUser = null;
+        let selectedVehicle = null;
+        let selectedPayment = null;
+        
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            // Evento de login
+            loginForm.addEventListener('submit', handleLogin);
+            
+            // Evento de logout
+            logoutBtn.addEventListener('click', handleLogout);
+            
+            // Evento de voltar para veículos
+            backBtn.addEventListener('click', showVehiclesSection);
+            
+            // Eventos das abas de pagamentos
+            paymentTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    switchPaymentTab(this.dataset.tab);
+                });
+            });
+            
+            // Eventos do modal
+            closeModalBtn.addEventListener('click', closeModal);
+            cancelPaymentBtn.addEventListener('click', closeModal);
+            confirmPaymentBtn.addEventListener('click', processPayment);
+            
+            // Fechar modal ao clicar fora
+            paymentModal.addEventListener('click', function(e) {
+                if (e.target === paymentModal) {
+                    closeModal();
+                }
+            });
+        });
+        
+        // Função para lidar com o login
+        function handleLogin(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            
+            // Simulação de autenticação
+            if (email && password) {
+                // Em uma aplicação real, seria uma chamada à API
+                currentUser = sampleData.user;
+                
+                // Atualiza a UI do usuário
+                updateUserUI();
+                
+                // Mostra a seção principal
+                authSection.style.display = 'none';
+                appSection.style.display = 'block';
+                
+                // Carrega os veículos
+                loadVehicles();
+            } else {
+                alert('Por favor, preencha todos os campos.');
+            }
+        }
+        
+        // Função para lidar com o logout
+        function handleLogout() {
+            currentUser = null;
+            selectedVehicle = null;
+            selectedPayment = null;
+            
+            // Limpa o formulário
+            loginForm.reset();
+            
+            // Mostra a seção de autenticação
+            appSection.style.display = 'none';
+            authSection.style.display = 'flex';
+        }
+        
+        // Atualiza a UI com informações do usuário
+        function updateUserUI() {
+            if (!currentUser) return;
+            
+            userName.textContent = currentUser.name;
+            userAvatar.textContent = currentUser.avatarInitials;
+        }
+        
+        // Carrega os veículos na grade
+        function loadVehicles() {
+            vehiclesGrid.innerHTML = '';
+            
+            sampleData.vehicles.forEach(vehicle => {
+                const vehicleCard = createVehicleCard(vehicle);
+                vehiclesGrid.appendChild(vehicleCard);
+            });
+        }
+        
+        // Cria um card de veículo
+        function createVehicleCard(vehicle) {
+            const card = document.createElement('div');
+            card.className = 'vehicle-card fade-in';
+            card.dataset.id = vehicle.id;
+            
+            // Calcula estatísticas de pagamento
+            const paymentStats = calculatePaymentStats(vehicle.payments);
+            
+            card.innerHTML = `
+                <div class="vehicle-image" style="background-image: url('${vehicle.image}')">
+                    <span class="vehicle-badge">${vehicle.plate}</span>
+                </div>
+                <div class="vehicle-content">
+                    <h3 class="vehicle-title">${vehicle.brand} ${vehicle.model} ${vehicle.year}</h3>
+                    <div class="vehicle-meta">
+                        <span>${vehicle.status === 'active' ? 'Aluguel ativo' : 'Aluguel finalizado'}</span>
+                        <div class="payment-status">
+                            <span class="status-indicator ${getStatusIndicatorClass(paymentStats)}"></span>
+                            <span>${paymentStats.paid}/${vehicle.payments.length} pagos</span>
+                        </div>
+                    </div>
+                    <div class="vehicle-period">
+                        ${formatDate(vehicle.rentalStart)} - ${formatDate(vehicle.rentalEnd)}
+                    </div>
+                    ${paymentStats.overdue > 0 ? 
+                        `<div style="color: var(--danger-color); font-size: 0.875rem; margin-top: 0.5rem;">
+                            ${paymentStats.overdue} pagamento(s) atrasado(s)
+                        </div>` : ''
+                    }
+                </div>
+            `;
+            
+            card.addEventListener('click', () => showPayments(vehicle));
+            return card;
+        }
+        
+        // Mostra a seção de pagamentos para um veículo específico
+        function showPayments(vehicle) {
+            selectedVehicle = vehicle;
+            
+            // Atualiza o título
+            paymentVehicleTitle.textContent = `Pagamentos - ${vehicle.brand} ${vehicle.model}`;
+            
+            // Esconde a seção de veículos e mostra a de pagamentos
+            vehiclesSection.style.display = 'none';
+            paymentsSection.style.display = 'block';
+            
+            // Carrega os pagamentos
+            loadPayments(vehicle.payments);
+            
+            // Ativa a aba "Todos" por padrão
+            switchPaymentTab('all');
+        }
+        
+        // Mostra a seção de veículos
+        function showVehiclesSection() {
+            paymentsSection.style.display = 'none';
+            vehiclesSection.style.display = 'block';
+            selectedVehicle = null;
+        }
+        
+        // Carrega os pagamentos nas listas
+        function loadPayments(payments) {
+            // Limpa as listas
+            Object.values(paymentsLists).forEach(list => {
+                list.innerHTML = '';
+                
+                if (payments.length === 0) {
+                    const emptyMsg = document.createElement('div');
+                    emptyMsg.className = 'text-center mb-3 mt-3';
+                    emptyMsg.textContent = 'Nenhum pagamento encontrado';
+                    list.appendChild(emptyMsg);
+                }
+            });
+            
+            // Preenche as listas
+            payments.forEach(payment => {
+                const paymentItem = createPaymentItem(payment);
+                
+                // Adiciona à lista "Todos"
+                paymentsLists.all.appendChild(paymentItem.cloneNode(true));
+                
+                // Adiciona à lista correspondente ao status
+                if (payment.status === 'pending') {
+                    paymentsLists.pending.appendChild(paymentItem.cloneNode(true));
+                } else if (payment.status === 'paid') {
+                    paymentsLists.paid.appendChild(paymentItem.cloneNode(true));
+                } else if (payment.status === 'overdue') {
+                    paymentsLists.overdue.appendChild(paymentItem.cloneNode(true));
+                }
+            });
+        }
+        
+        // Cria um item de pagamento
+        function createPaymentItem(payment) {
+            const item = document.createElement('div');
+            item.className = 'payment-item fade-in';
+            
+            // Determina a classe e texto do status
+            let statusClass, statusText;
+            if (payment.status === 'paid') {
+                statusClass = 'status-paid';
+                statusText = `Pago em ${formatDate(payment.paidDate)}`;
+            } else if (payment.status === 'pending') {
+                statusClass = 'status-pending';
+                statusText = 'Pendente';
+            } else if (payment.status === 'overdue') {
+                statusClass = 'status-overdue';
+                statusText = 'Atrasado';
+            }
+            
+            // Formata o valor
+            const formattedAmount = payment.amount.toLocaleString('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            });
+            
+            item.innerHTML = `
+                <div class="payment-info">
+                    <div class="payment-id">${payment.description}</div>
+                    <div class="payment-details">
+                        Vencimento: ${formatDate(payment.dueDate)} | 
+                        ID: ${payment.id}
+                    </div>
+                </div>
+                <div class="payment-amount">${formattedAmount}</div>
+                <div class="payment-status-badge ${statusClass}">${statusText}</div>
+            `;
+            
+            item.addEventListener('click', () => showPaymentDetails(payment));
+            return item;
+        }
+        
+        // Alterna entre as abas de pagamento
+        function switchPaymentTab(tabName) {
+            // Atualiza as abas
+            paymentTabs.forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.tab === tabName);
+            });
+            
+            // Atualiza as listas
+            Object.keys(paymentsLists).forEach(key => {
+                paymentsLists[key].classList.toggle('active', key === tabName);
+            });
+        }
+        
+        // Mostra os detalhes do pagamento no modal
+        function showPaymentDetails(payment) {
+            selectedPayment = payment;
+            
+            // Formata o valor
+            const formattedAmount = payment.amount.toLocaleString('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            });
+            
+            // Formata a data de vencimento
+            const dueDate = formatDate(payment.dueDate);
+            
+            // Formata a data de pagamento (se existir)
+            const paidDate = payment.paidDate ? formatDate(payment.paidDate) : '--/--/----';
+            
+            // Determina o status
+            let statusText, statusClass;
+            if (payment.status === 'paid') {
+                statusText = 'Pago';
+                statusClass = 'status-paid';
+            } else if (payment.status === 'pending') {
+                statusText = 'Pendente';
+                statusClass = 'status-pending';
+            } else if (payment.status === 'overdue') {
+                statusText = 'Atrasado';
+                statusClass = 'status-overdue';
+            }
+            
+            // Preenche o modal
+            modalBody.innerHTML = `
+                <div class="payment-detail">
+                    <span class="detail-label">Descrição:</span>
+                    <span class="detail-value">${payment.description}</span>
+                </div>
+                <div class="payment-detail">
+                    <span class="detail-label">Valor:</span>
+                    <span class="detail-value">${formattedAmount}</span>
+                </div>
+                <div class="payment-detail">
+                    <span class="detail-label">Vencimento:</span>
+                    <span class="detail-value">${dueDate}</span>
+                </div>
+                <div class="payment-detail">
+                    <span class="detail-label">Data de Pagamento:</span>
+                    <span class="detail-value">${paidDate}</span>
+                </div>
+                <div class="payment-detail">
+                    <span class="detail-label">Status:</span>
+                    <span class="payment-status-badge ${statusClass}">${statusText}</span>
+                </div>
+            `;
+            
+            // Mostra ou esconde o botão de pagamento
+            if (payment.status === 'paid') {
+                confirmPaymentBtn.style.display = 'none';
+            } else {
+                confirmPaymentBtn.style.display = 'inline-block';
+            }
+            
+            // Mostra o modal
+            paymentModal.style.display = 'flex';
+        }
+        
+        // Fecha o modal
+        function closeModal() {
+            paymentModal.style.display = 'none';
+            selectedPayment = null;
+        }
+        
+        // Processa o pagamento (simulação)
+        function processPayment() {
+            if (!selectedPayment) return;
+            
+            // Em uma aplicação real, aqui seria uma chamada à API
+            // Simulamos o pagamento atualizando o status
+            selectedPayment.status = 'paid';
+            selectedPayment.paidDate = new Date().toLocaleDateString('pt-BR');
+            
+            // Atualiza a lista de pagamentos
+            loadPayments(selectedVehicle.payments);
+            
+            // Atualiza a lista de veículos
+            loadVehicles();
+            
+            // Fecha o modal
+            closeModal();
+            
+            // Mostra mensagem de sucesso
+            alert('Pagamento realizado com sucesso!');
+        }
+        
+        // Calcula estatísticas de pagamento
+        function calculatePaymentStats(payments) {
+            return {
+                total: payments.length,
+                paid: payments.filter(p => p.status === 'paid').length,
+                pending: payments.filter(p => p.status === 'pending').length,
+                overdue: payments.filter(p => p.status === 'overdue').length
+            };
+        }
+        
+        // Retorna a classe do indicador de status com base nas estatísticas
+        function getStatusIndicatorClass(stats) {
+            if (stats.overdue > 0) return 'status-danger';
+            if (stats.pending > 0) return 'status-warning';
+            return 'status-good';
+        }
+        
+        // Formata data para o padrão brasileiro
+        function formatDate(dateString) {
+            if (!dateString) return '--/--/----';
+            const [day, month, year] = dateString.split('/');
+            return `${day.padStart(2, '0')}/${month.padStart(2, '0')}/${year}`;
+        }
+    </script>
+</body>
+</html>
